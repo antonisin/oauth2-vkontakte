@@ -6,6 +6,7 @@ use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class Vkontakte extends AbstractProvider
 {
@@ -122,15 +123,17 @@ class Vkontakte extends AbstractProvider
         return $this;
     }
 
-    public function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUrl(): string
     {
         return "$this->baseOAuthUri/authorize";
     }
-    public function getBaseAccessTokenUrl(array $params)
+
+    public function getBaseAccessTokenUrl(array $params): string
     {
         return "$this->baseOAuthUri/access_token";
     }
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+
+    public function getResourceOwnerDetailsUrl(AccessToken $token): string
     {
         $params = [
             'fields'       => $this->userFields,
@@ -143,11 +146,13 @@ class Vkontakte extends AbstractProvider
 
         return $url;
     }
-    protected function getDefaultScopes()
+
+    protected function getDefaultScopes(): array
     {
         return $this->scopes;
     }
-    protected function checkResponse(ResponseInterface $response, $data)
+
+    protected function checkResponse(ResponseInterface $response, $data): void
     {
         // Metadata info
         $contentTypeRaw = $response->getHeader('Content-Type');
@@ -176,7 +181,8 @@ class Vkontakte extends AbstractProvider
             throw new IdentityProviderException($errorMessage, $errorCode, $data);
         }
     }
-    protected function createResourceOwner(array $response, AccessToken $token)
+
+    protected function createResourceOwner(array $response, AccessToken $token): ResourceOwnerInterface
     {
         $response   = reset($response['response']);
         $additional = $token->getValues();
